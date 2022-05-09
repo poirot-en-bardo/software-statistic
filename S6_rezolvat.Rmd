@@ -1,0 +1,162 @@
+---
+title: "Seminar 6"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+```{r}
+library(tidyverse)
+```
+Folosind tabelul `diamonds`:
+
+>Partea I
+
+1. Creati un tabel cu urmatoarele variabile: `carat`, `cut`, `color`, `price` si `price` convertit in lei la cursul zilei.
+```{r}
+d1 <- select(diamonds, carat, cut, color, price)
+mutate(d1, 
+       pret= price*4.45)
+```
+
+```{r}
+rezultat <- diamonds %>%
+  select(carat, cut, color, price) %>%
+       mutate(pret=price*4.45)
+```
+
+
+2. Creati o variabila care sa contina color cu litera mica.
+```{r}
+mutate(diamonds,
+       culoare_mica=tolower(color))
+```
+3. Creati o variabila care sa contina volumul (`xyz`).
+
+```{r}
+(mutate(diamonds,
+       volum=x*y*z))
+```
+4. Convertiti `x`,`y`,`z` in centimetri.
+```{r}
+mutate(diamonds,
+       x_cm=x/10,
+       y_cm=y/10,
+       z_cm=z/10)
+```
+5. Creati un tabel care sa contina doar variabilele noi create la punctele anterioare.
+```{r}
+(tabel_nou <-transmute(diamonds,
+                      pret=price*4.45,
+                      x_cm=x/10,
+                      y_cm=y/10,
+                      z_cm=z/10,
+                      volum=x*y*z,
+                      culoare_mica=tolower(color)
+                      ))
+```
+6. Creati un tabel care sa contina doar variabilele noi create la punctele anterioare cu `clarity` SI2 sau VS1.
+```{r}
+tabel_nou$clarity <- diamonds$clarity
+#sau mutate(tabel_nou, diamonds$clarity)
+(tabel_nou_nou <- filter(tabel_nou, clarity=='SI2' | clarity=='VS1'))
+```
+
+>Partea 2
+
+Construiti un tabel care sa contina:
+
+1. Media `price` pentru fiecare valoare a lui `color`.
+
+```{r}
+(sumar <- diamonds %>%
+    group_by(color)%>%
+    summarise(media = mean(price))) 
+```
+2. Mediana `price` pentru fiecare valoare a lui `clarity`.
+```{r}
+(sumar <- diamonds %>%
+  group_by(clarity) %>%
+  summarise(mediana_pret=median(price)))
+
+  
+```
+3. Media si mediana `price` pentru fiecare `cut`.
+```{r}
+(sumar <- diamonds %>%
+  group_by(cut) %>%
+  summarise(media_pret=mean(price),
+            mediana_pret=median(price)))
+
+```
+4. Media, abaterea medie patratica si numarul de observatii pentru `table` pentru fiecare `cut`.
+```{r}
+(sumar <- diamonds %>%
+  group_by(cut) %>%
+  summarise(media_table=mean(table),
+  sigma=sd(table),
+  nr = n())
+)
+```
+5. Media, varianta si mediana pentru `depth` pentru fiecare `color`.
+```{r}
+date_grupate <- group_by(diamonds,color)
+(sumar <- summarise(date_grupate,
+                   media_depth=mean(depth),
+                   var_depth=var(depth),
+                   mediana_depth=median(depth)))
+
+(sumar <- diamonds %>%
+    group_by(color)%>%
+    summarise(media = mean(depth),
+              var_depth = var(depth),
+              mediana = median(depth)))
+```
+6. Media `price` pentru toate combinatiile de valori a `color` si `clarity`.
+```{r}
+date_grupate <- group_by(diamonds, color,clarity)
+sumar <-summarise(date_grupate,
+                  media_pret=mean(price))
+sumar
+
+```
+```{r}
+(sumar <- diamonds %>%
+  group_by(color,clarity) %>%
+summarise(media_pret=mean(price), .groups="keep"))
+sumar
+```
+
+2. Mediana `price` pentru toate combinatiile de valori a `clarity`, `cut`.
+```{r}
+sumar <-diamonds %>%
+  group_by(clarity,cut) %>%
+summarise(mediana_pret=median(price))
+sumar
+```
+3. Media si mediana `price` toate combinatiile de valori a `cut`, `color`.
+```{r}
+sumar <- diamonds %>%
+  group_by(cut, color) %>%
+  summarise(media_pret = mean(price),
+            mediana_pret=median(price))
+sumar
+```
+4. Media, abaterea medie patratica si numarul de observatii pentru `table` pentru toate combinatiile de valori a `cut`, `color` si `clarity`.
+```{r}
+sumar <-diamonds %>%
+  group_by(cut,color,clarity) %>%
+summarise(media_table=mean(price),
+          sd_table=sd(table),
+          nr=n())
+sumar
+```
+5. Media, varianta si mediana pentru `depth` pentru toate combinatiile de valori a `color` si `cut`.
+```{r}
+sumar <-diamonds %>%
+  group_by(color,clarity) %>%
+summarise(media_pret=mean(depth),
+          varianta = var(depth),
+          mediana = median(depth))
+sumar
+```
+

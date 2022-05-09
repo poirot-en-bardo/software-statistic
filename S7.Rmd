@@ -1,0 +1,260 @@
+---
+title: "S7"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+> Partea I
+
+1. Incarcati in R tabelul `diamonds.csv'. Afisati primele 15 observatii din tabel.
+```{r}
+diamante<-read.csv('diamonds.csv',sep=" ")
+head(diamante, 15)
+```
+2. Incarcati in R tabelul `pseudo_facebook.tsv`. Afisati ultimele 13 observatii din tabel. 
+```{r}
+pf<-read.csv('pseudo_facebook.tsv',sep = '\t')
+tail(pf,13)
+```
+3. Afisati structura pentru fiecare tabel incarcat anterior.
+```{r}
+str(diamante)
+str(pf)
+```
+4. In tabelul `diamonds` converiti toate variabilele de tip `chr` in variabile de tip factor.
+```{r}
+diamante$cut <- factor(diamante$cut)
+```
+
+```{r}
+diamante$color <- factor(diamante$color)
+```
+
+```{r}
+diamante$clarity <- factor(diamante$clarity)
+```
+
+
+5. Cautati documentatia la functia `ordered`. Cum se poate crea o variabila de tip factor *ordonat*?
+
+```{r}
+diamante$clarity <- factor(diamante$clarity, ordered = TRUE)
+```
+
+> Partea II
+#p 112 10-11
+
+1. Generati pe rand 10, 100, 1000, 10000, 100000, 500000 de numere urmand distributia uniforma in intervalul 10, 15. Calculati media lor (pentru fiecare in parte). Ce observati?
+```{r}
+u1<- runif(10,min=10, max= 15)
+m_u1 <- mean(u1)
+u2<- runif(100,min=10, max= 15)
+m_u2 <- mean(u2)
+u3<- runif(1000,min=10, max= 15)
+m_u3 <- mean(u3)
+u4<- runif(10000,min=10, max= 15)
+m_u4 <- mean(u4)
+u5<- runif(100000,min=10, max= 15)
+m_u5 <- mean(u5)
+u6<- runif(500000,min=10, max= 15)
+m_u6 <- mean(u6)
+```
+
+2. Reprezentati cate o histograma pentru fiecare din listele de mai sus. Schimbati numarul de intervale. Colorati barele diferit pentru fiecare histograma. Asezati graficele intr-o singura imagine. 
+```{r}
+library(tidyverse)
+library(gridExtra)
+
+```
+```{r}
+g1 <- qplot(u1,bins=10,fill=I('forestgreen'))
+g1
+
+```
+```{r}
+g2 <- qplot(u2,bins=20, fill=I('forestgreen'))
+g2
+
+```
+```{r}
+g3 <- qplot(u3,bins=20, fill=I('forestgreen'))
+g3
+
+```
+```{r}
+g4 <- qplot(u4,bins=20, fill=I('forestgreen'))
+g4
+
+```
+```{r}
+g5 <- qplot(u5,bins=20, fill=I('forestgreen'))
+g5
+
+```
+
+```{r}
+g6 <- qplot(u6,bins=20, fill=I('forestgreen'))
+g6
+
+```
+
+```{r}
+grid.arrange(g1,g2,g3,g4,g5,g6)
+```
+3. Generati pe rand 10, 100, 1000, 10000, 100000, 500000 de numere urmand distributia normala cu media 10 si abaterea medie patratica 2. Calculati media lor (pentru fiecare in parte). Ce observati?
+
+
+```{r}
+u1<- rnorm(10,mean=10, sd= 2)
+m_ul <- mean(u1)
+u2<- rnorm(100,mean=10, sd= 2)
+m_u2 <- mean(u2)
+u3<- rnorm(1000,mean=10, sd= 2)
+m_u3 <- mean(u3)
+u4<- rnorm(10000,mean=10, sd= 2)
+m_u4 <- mean(u4)
+u5<- rnorm(100000,mean=10, sd= 2)
+m_u5 <- mean(u5)
+u6<- rnorm(500000,mean=10, sd= 2)
+m_u6 <- mean(u6)
+```
+```{r}
+g1 <- qplot(u1,bins=10,fill=I('forestgreen'))
+g1
+
+```
+```{r}
+g2 <- qplot(u2,bins=20, fill=I('forestgreen'))
+g2
+
+```
+```{r}
+g3 <- qplot(u3,bins=20, fill=I('forestgreen'))
+g3
+
+```
+```{r}
+g4 <- qplot(u4,bins=20, fill=I('forestgreen'))
+g4
+
+```
+```{r}
+g5 <- qplot(u5,bins=20, fill=I('forestgreen'))
+g5
+
+```
+
+```{r}
+g6 <- qplot(u6,bins=20, fill=I('forestgreen'))
+g6
+
+```
+
+```{r}
+grid.arrange(g1,g2,g3,g4,g5,g6)
+```
+
+
+
+4. Reprezentati cate o histograma pentru fiecare din listele de mai sus. Schimbati numarul de intervale. Adaugati curba de densitate normala.  Colorati barele diferit pentru fiecare histograma. Asezati graficele intr-o singura imagine. 
+
+```{r}
+
+```
+
+
+> Partea III
+
+1. Construiti un tabel in care sa apara pe linii fiecare culoare, pe coloane `clarity` iar continutul sa reprezinte media pretului diamantelor pentru culoare si claritatea respective.
+```{r}
+data("diamonds")
+```
+
+```{r}
+ex1 <- diamonds %>%
+  group_by(clarity,color) %>%
+  summarise(media_pret=mean(price))
+head(ex1)
+```
+```{r}
+library(reshape2)
+```
+
+```{r}
+ex1 <- dcast(ex1, color~clarity, value.var='media_pret')
+ex1
+```
+`
+
+2. Construiti un tabel care pe linii sa aiba valorile `cut`, pe coloane culorile, iar valorile din tabel sa reprezinte numarul diamantelor de fiecare tip.
+```{r}
+ex2 <- diamonds %>%
+  group_by(cut,color) %>%
+  summarise(numar=n())
+head(ex2)
+```
+```{r}
+ex2 <- dcast(ex2,cut~color,value.var = 'numar')
+ex2
+```
+3. Construiti un tabel care pe linii sa aiba pe linii `clarity`, pe coloane valorilile `cut` iar continutul sa fie dat de mediana `carat`.
+
+```{r}
+diamonds%>%
+  group_by(clarity, cut) %>%
+  summarise(mediana = median(carat))%>%
+  dcast(clarity~cut, value.var='mediana')
+
+
+
+
+ex3 <- diamonds %>%
+  group_by(clarity,cut) %>%
+  summarise(mediana_carat=median(carat))
+head(ex3)
+```
+```{r}
+ex3 <- dcast(ex3,clarity~cut, value.var = 'mediana_carat')
+ex3
+```
+4. Construiti un tabel care pe linii sa aiba pe linii `clarity`, pe coloane valorilile `color` iar continutul sa fie dat de mediana `price`.
+```{r}
+diamonds %>%
+  group_by(clarity, color) %>%
+  summarise(mediana = median(price))%>%
+  dcast(clarity~color, value.var='mediana')
+```
+
+
+----
+
+5. Construiti o variabila noua care sa aiba pretul impartit in intervale cu taietura la 0, 15000, 50000, 100000, 150000, 200000.
+
+```{r}
+diamonds$intervale_pret <- cut(diamonds$price, breaks = c(0, 1000, 5000, 10000, 20000))
+table(diamonds$intervale_pret)
+```
+
+
+6. Construiti un tabel care sa contina pentru fiecare culoare mediana `carat` pentru fiecare categorie de pret de la punctul anterior. Valorile `carat` sa apara pe coloane diferite. 
+
+```{r}
+diamonds %>%
+  group_by(color, intervale_pret) %>%
+  summarise(mediana = median(carat)) %>%
+  dcast(intervale_pret~color, value.var='mediana')
+```
+
+
+7. construiti un tabel care sa contina pentru fiecare categorie de pret definita mai sus mediana `depth` pentru fiecare culoare (culorile sa apara pe coloane diferite).
+
+```{r}
+diamonds %>%
+  group_by(intervale_pret, color) %>%
+  summarise(mediana = median(depth)) %>%
+  dcast(intervale_pret~color, value.var='mediana')
+```
+
+
+
